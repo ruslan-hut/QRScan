@@ -2,6 +2,8 @@ package ua.com.programmer.barcodetest.data.repository
 
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
 import ua.com.programmer.barcodetest.data.datasource.BarcodeDataSource
+import ua.com.programmer.barcodetest.error.AppError
+import ua.com.programmer.barcodetest.error.ErrorMapper
 
 /**
  * Implementation of BarcodeRepository.
@@ -22,10 +24,10 @@ class BarcodeRepositoryImpl(
             if (success) {
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("Failed to save barcode"))
+                Result.failure(AppError.DatabaseError.SaveFailed)
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorMapper.mapDatabaseError(e, "save"))
         }
     }
 
@@ -34,7 +36,7 @@ class BarcodeRepositoryImpl(
             val items = localDataSource.getAllHistoryItems()
             Result.success(items)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorMapper.mapDatabaseError(e, "load"))
         }
     }
 
@@ -44,10 +46,10 @@ class BarcodeRepositoryImpl(
             if (success) {
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("Failed to delete item"))
+                Result.failure(AppError.DatabaseError.DeleteFailed)
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorMapper.mapDatabaseError(e, "delete"))
         }
     }
 
@@ -56,7 +58,7 @@ class BarcodeRepositoryImpl(
             val deletedCount = localDataSource.cleanOldHistory()
             Result.success(deletedCount)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorMapper.mapDatabaseError(e, "cleanup"))
         }
     }
 }

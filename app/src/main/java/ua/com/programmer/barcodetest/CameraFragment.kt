@@ -29,10 +29,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import ua.com.programmer.barcodetest.error.ErrorDisplay
+import ua.com.programmer.barcodetest.viewmodel.CameraViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.annotation.Nonnull
-import ua.com.programmer.barcodetest.viewmodel.CameraViewModel
 
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
@@ -139,7 +140,9 @@ class CameraFragment : Fragment() {
                 }
                 
                 state.error?.let { error ->
-                    Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+                    ErrorDisplay.showError(requireContext(), error)
+                    // Clear error after displaying
+                    viewModel.clearError()
                 }
             }
         }
@@ -161,7 +164,7 @@ class CameraFragment : Fragment() {
 
                                 override fun onCodeNotFound(error: String?) {
                                     utils.debug("on code not found: $error")
-                                    viewModel.setError(error)
+                                    viewModel.setErrorFromString(error)
                                 }
                             })
                         )

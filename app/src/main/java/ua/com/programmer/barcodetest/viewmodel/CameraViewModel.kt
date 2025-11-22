@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.Utils
 import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
 import ua.com.programmer.barcodetest.di.AppPreferences
+import ua.com.programmer.barcodetest.error.AppError
+import ua.com.programmer.barcodetest.error.ErrorMapper
+import ua.com.programmer.barcodetest.error.getErrorMessage
 import javax.inject.Inject
 
 data class CameraUiState(
@@ -23,7 +26,7 @@ data class CameraUiState(
     val isBarcodeScanned: Boolean = false,
     val showButtons: Boolean = false,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: AppError? = null
 )
 
 @HiltViewModel
@@ -94,8 +97,9 @@ class CameraViewModel @Inject constructor(
                     state.barcodeFormatInt
                 ).onSuccess {
                     flagSaved = true
-                }.onFailure { error ->
-                    _uiState.value = _uiState.value.copy(error = error.message)
+                }.onFailure { throwable ->
+                    val appError = ErrorMapper.map(throwable)
+                    _uiState.value = _uiState.value.copy(error = appError)
                 }
             }
         }
@@ -112,8 +116,22 @@ class CameraViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(showButtons = show)
     }
 
-    fun setError(error: String?) {
+    fun setError(error: AppError?) {
         _uiState.value = _uiState.value.copy(error = error)
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
+    }
+
+    fun setErrorFromString(errorMessage: String?) {
+        errorMessage?.let {
+            val appError = AppError.UnknownError(
+                message = it,
+                userMessage = it
+            )
+            setError(appError)
+        }
     }
 }
 

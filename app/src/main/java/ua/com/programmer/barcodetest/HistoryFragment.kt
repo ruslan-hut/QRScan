@@ -18,6 +18,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
+import ua.com.programmer.barcodetest.error.ErrorDisplay
 import ua.com.programmer.barcodetest.viewmodel.HistoryViewModel
 
 @AndroidEntryPoint
@@ -82,7 +83,9 @@ class HistoryFragment : Fragment() {
                 emptyView.visibility = if (state.isEmpty) View.VISIBLE else View.GONE
                 
                 state.error?.let { error ->
-                    // Handle error if needed
+                    ErrorDisplay.showError(requireContext(), error)
+                    // Clear error after displaying
+                    viewModel.clearError()
                 }
             }
         }

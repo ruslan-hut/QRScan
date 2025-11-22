@@ -9,13 +9,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
 import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
+import ua.com.programmer.barcodetest.error.AppError
+import ua.com.programmer.barcodetest.error.ErrorMapper
 import javax.inject.Inject
 
 data class HistoryUiState(
     val historyItems: List<BarcodeHistoryItem> = emptyList(),
     val isLoading: Boolean = false,
     val isEmpty: Boolean = true,
-    val error: String? = null
+    val error: AppError? = null
 )
 
 @HiltViewModel
@@ -41,10 +43,11 @@ class HistoryViewModel @Inject constructor(
                         isLoading = false
                     )
                 }
-                .onFailure { error ->
+                .onFailure { throwable ->
+                    val appError = ErrorMapper.map(throwable)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = error.message
+                        error = appError
                     )
                 }
         }
@@ -56,10 +59,15 @@ class HistoryViewModel @Inject constructor(
                 .onSuccess {
                     loadHistory() // Reload after deletion
                 }
-                .onFailure { error ->
-                    _uiState.value = _uiState.value.copy(error = error.message)
+                .onFailure { throwable ->
+                    val appError = ErrorMapper.map(throwable)
+                    _uiState.value = _uiState.value.copy(error = appError)
                 }
         }
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
     }
 
     fun refresh() {

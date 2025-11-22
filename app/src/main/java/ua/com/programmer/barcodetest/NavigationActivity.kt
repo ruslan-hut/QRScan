@@ -28,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
+import ua.com.programmer.barcodetest.error.ErrorMapper
 import java.util.Date
 import javax.inject.Inject
 
@@ -203,8 +204,9 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Use injected repository for database operations
         GlobalScope.launch(Dispatchers.IO) {
             repository.cleanOldHistory()
-                .onFailure { error ->
-                    Log.e("XBUG", "Purge history error. ${error.message}")
+                .onFailure { throwable ->
+                    val appError = ErrorMapper.map(throwable)
+                    Log.e("XBUG", "Purge history error: ${ErrorMapper.getDebugMessage(appError)}")
                 }
         }
     }
