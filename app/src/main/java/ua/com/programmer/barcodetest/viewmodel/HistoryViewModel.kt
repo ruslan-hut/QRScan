@@ -1,15 +1,15 @@
 package ua.com.programmer.barcodetest.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
 import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
-import ua.com.programmer.barcodetest.data.repository.RepositoryProvider
+import javax.inject.Inject
 
 data class HistoryUiState(
     val historyItems: List<BarcodeHistoryItem> = emptyList(),
@@ -18,9 +18,10 @@ data class HistoryUiState(
     val error: String? = null
 )
 
-class HistoryViewModel(private val context: Context) : ViewModel() {
-
-    private val repository: BarcodeRepository = RepositoryProvider.provideBarcodeRepository(context)
+@HiltViewModel
+class HistoryViewModel @Inject constructor(
+    private val repository: BarcodeRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState: StateFlow<HistoryUiState> = _uiState.asStateFlow()

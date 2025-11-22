@@ -15,15 +15,14 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.barcode.common.Barcode
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
 import ua.com.programmer.barcodetest.viewmodel.HistoryViewModel
-import ua.com.programmer.barcodetest.viewmodel.HistoryViewModelFactory
 
+@AndroidEntryPoint
 class HistoryFragment : Fragment() {
-    private val viewModel: HistoryViewModel by viewModels {
-        HistoryViewModelFactory(requireContext())
-    }
+    private val viewModel: HistoryViewModel by viewModels()
     
     private lateinit var mFragmentView: View
     private lateinit var mRecyclerView: RecyclerView

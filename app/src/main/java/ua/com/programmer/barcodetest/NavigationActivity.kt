@@ -23,12 +23,19 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
 import java.util.Date
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    
+    @Inject
+    lateinit var repository: BarcodeRepository
     private var backPressedTime: Long = 0
     private var appSettings: AppSettings? = null
     private lateinit var onBackPressedCallback: OnBackPressedCallback
@@ -193,18 +200,12 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun cleanDatabase() {
-        // Use repository for database operations
+        // Use injected repository for database operations
         GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val repository = ua.com.programmer.barcodetest.data.repository.RepositoryProvider
-                    .provideBarcodeRepository(this@NavigationActivity)
-                repository.cleanOldHistory()
-                    .onFailure { error ->
-                        Log.e("XBUG", "Purge history error. ${error.message}")
-                    }
-            } catch (ex: Exception) {
-                Log.e("XBUG", "Purge history error. $ex")
-            }
+            repository.cleanOldHistory()
+                .onFailure { error ->
+                    Log.e("XBUG", "Purge history error. ${error.message}")
+                }
         }
     }
 

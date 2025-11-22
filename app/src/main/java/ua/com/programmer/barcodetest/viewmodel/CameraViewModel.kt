@@ -5,13 +5,16 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.Utils
 import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
-import ua.com.programmer.barcodetest.data.repository.RepositoryProvider
+import ua.com.programmer.barcodetest.di.AppPreferences
+import javax.inject.Inject
 
 data class CameraUiState(
     val barcodeValue: String = "",
@@ -23,15 +26,14 @@ data class CameraUiState(
     val error: String? = null
 )
 
-class CameraViewModel(private val context: Context) : ViewModel() {
+@HiltViewModel
+class CameraViewModel @Inject constructor(
+    private val repository: BarcodeRepository,
+    @ApplicationContext private val context: Context,
+    @AppPreferences private val sharedPreferences: SharedPreferences
+) : ViewModel() {
 
-    private val repository: BarcodeRepository = RepositoryProvider.provideBarcodeRepository(context)
     private val utils = Utils()
-    
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-        "ua.com.programmer.barcodetest.preference",
-        Context.MODE_PRIVATE
-    )
 
     private val _uiState = MutableStateFlow(CameraUiState())
     val uiState: StateFlow<CameraUiState> = _uiState.asStateFlow()

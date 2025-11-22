@@ -27,17 +27,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.annotation.Nonnull
 import ua.com.programmer.barcodetest.viewmodel.CameraViewModel
 
+@AndroidEntryPoint
 class CameraFragment : Fragment() {
 
-    private val viewModel: CameraViewModel by viewModels {
-        CameraViewModelFactory(requireContext())
-    }
+    private val viewModel: CameraViewModel by viewModels()
 
     private lateinit var cameraView: PreviewView
     private lateinit var textView: TextView
