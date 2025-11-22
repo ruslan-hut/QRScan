@@ -6,6 +6,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ua.com.programmer.barcodetest.data.database.BarcodeDatabase
+import ua.com.programmer.barcodetest.data.database.BarcodeHistoryDao
 import ua.com.programmer.barcodetest.data.datasource.BarcodeDataSource
 import ua.com.programmer.barcodetest.data.datasource.BarcodeLocalDataSource
 import javax.inject.Singleton
@@ -16,10 +18,26 @@ object DataSourceModule {
 
     @Provides
     @Singleton
-    fun provideBarcodeDataSource(
+    fun provideBarcodeDatabase(
         @ApplicationContext context: Context
+    ): BarcodeDatabase {
+        return BarcodeDatabase.getDatabase(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBarcodeHistoryDao(
+        database: BarcodeDatabase
+    ): BarcodeHistoryDao {
+        return database.barcodeHistoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBarcodeDataSource(
+        dao: BarcodeHistoryDao
     ): BarcodeDataSource {
-        return BarcodeLocalDataSource(context)
+        return BarcodeLocalDataSource(dao)
     }
 }
 

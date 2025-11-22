@@ -4,6 +4,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+/**
+ * @deprecated This class is deprecated. Use Room database (BarcodeDatabase) instead.
+ * This class is kept for reference but is no longer used in the application.
+ */
+@Deprecated("Use Room database (BarcodeDatabase) instead", ReplaceWith("BarcodeDatabase"))
 internal class DBHelper(context: Context?) :
     SQLiteOpenHelper(context, "qrData", null, 2) {
     override fun onCreate(db: SQLiteDatabase) {

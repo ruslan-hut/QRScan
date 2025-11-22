@@ -1,23 +1,20 @@
 package ua.com.programmer.barcodetest.data.datasource
 
-import android.content.ContentValues
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import ua.com.programmer.barcodetest.DBHelper
 import ua.com.programmer.barcodetest.Utils
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
+import ua.com.programmer.barcodetest.data.database.BarcodeHistoryDao
+import ua.com.programmer.barcodetest.data.database.BarcodeHistoryEntity
 import java.util.Date
 import java.util.Locale
 
 /**
- * Local data source implementation using SQLite database.
+ * Local data source implementation using Room database.
  * This handles all direct database operations.
  */
-class BarcodeLocalDataSource(private val context: Context) : BarcodeDataSource {
+class BarcodeLocalDataSource(
+    private val dao: BarcodeHistoryDao
+) : BarcodeDataSource {
 
-    private val dbHelper = DBHelper(context)
     private val utils = Utils()
 
     override suspend fun saveBarcode(
@@ -25,87 +22,69 @@ class BarcodeLocalDataSource(private val context: Context) : BarcodeDataSource {
         barcodeFormat: String,
         codeType: Int
     ): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                if (barcodeValue.isNotEmpty() && barcodeFormat.isNotEmpty()) {
-                    val currentDate = Date()
-                    val eventTime = String.format("%ts", currentDate).toInt().toLong()
-                    val eventDate = String.format(
-                        Locale.getDefault(),
-                        "%td-%tm-%tY",
-                        currentDate,
-                        currentDate,
-                        currentDate
-                    )
+        return try {
+            if (barcodeValue.isNotEmpty() && barcodeFormat.isNotEmpty()) {
+                val currentDate = Date()
+                val eventTime = String.format("%ts", currentDate).toInt().toLong()
+                val eventDate = String.format(
+                    Locale.getDefault(),
+                    "%td-%tm-%tY",
+                    currentDate,
+                    currentDate,
+                    currentDate
+                )
 
-                    val db: SQLiteDatabase = dbHelper.writableDatabase
-                    val cv = ContentValues()
-                    cv.put("time", eventTime)
-                    cv.put("date", eventDate)
-                    cv.put("codeType", codeType)
-                    cv.put("codeValue", barcodeValue)
-                    db.insert("history", null, cv)
-                    true
-                } else {
-                    false
-                }
-            } catch (e: Exception) {
+                val entity = BarcodeHistoryEntity(
+                    id = 0, // Auto-generated
+                    date = eventDate,
+                    time = eventTime,
+                    codeType = codeType,
+                    codeValue = barcodeValue,
+                    note = null
+                )
+                dao.insertHistoryItem(entity)
+                true
+            } else {
                 false
             }
+        } catch (e: Exception) {
+            false
         }
     }
 
     override suspend fun getAllHistoryItems(): List<BarcodeHistoryItem> {
-        return withContext(Dispatchers.IO) {
-            val items = mutableListOf<BarcodeHistoryItem>()
-            val db = dbHelper.readableDatabase
-            val cursor = db.query("history", null, null, null, null, null, "time DESC")
-
-            try {
-                while (cursor.moveToNext()) {
-                    val id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-                    val date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
-                    val time = cursor.getLong(cursor.getColumnIndexOrThrow("time"))
-                    val codeType = cursor.getInt(cursor.getColumnIndexOrThrow("codeType"))
-                    val codeValue = cursor.getString(cursor.getColumnIndexOrThrow("codeValue"))
-                    val noteIndex = cursor.getColumnIndex("note")
-                    val note = if (noteIndex >= 0 && !cursor.isNull(noteIndex)) {
-                        cursor.getString(noteIndex)
-                    } else {
-                        null
-                    }
-
-                    items.add(BarcodeHistoryItem(id, date, time, codeType, codeValue, note))
-                }
-            } finally {
-                cursor.close()
+        return try {
+            val entities = dao.getAllHistoryItemsList()
+            entities.map { entity ->
+                BarcodeHistoryItem(
+                    id = entity.id,
+                    date = entity.date,
+                    time = entity.time,
+                    codeType = entity.codeType,
+                    codeValue = entity.codeValue,
+                    note = entity.note
+                )
             }
-
-            items
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
     override suspend fun deleteHistoryItem(itemId: Long): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val db = dbHelper.writableDatabase
-                val deletedRows = db.delete("history", "_id=?", arrayOf(itemId.toString()))
-                deletedRows > 0
-            } catch (e: Exception) {
-                false
-            }
+        return try {
+            val deletedRows = dao.deleteHistoryItemById(itemId)
+            deletedRows > 0
+        } catch (e: Exception) {
+            false
         }
     }
 
     override suspend fun cleanOldHistory(): Int {
-        return withContext(Dispatchers.IO) {
-            try {
-                val db = dbHelper.writableDatabase
-                val cutoffTime = utils.dateBeginShiftDate()
-                db.delete("history", "time<?", arrayOf(cutoffTime.toString()))
-            } catch (e: Exception) {
-                0
-            }
+        return try {
+            val cutoffTime = utils.dateBeginShiftDate()
+            dao.deleteOldHistory(cutoffTime)
+        } catch (e: Exception) {
+            0
         }
     }
 }
