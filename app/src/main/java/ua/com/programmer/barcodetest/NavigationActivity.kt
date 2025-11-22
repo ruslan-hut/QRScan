@@ -196,8 +196,12 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Use repository for database operations
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val repository = ua.com.programmer.barcodetest.data.BarcodeRepository(this@NavigationActivity)
+                val repository = ua.com.programmer.barcodetest.data.repository.RepositoryProvider
+                    .provideBarcodeRepository(this@NavigationActivity)
                 repository.cleanOldHistory()
+                    .onFailure { error ->
+                        Log.e("XBUG", "Purge history error. ${error.message}")
+                    }
             } catch (ex: Exception) {
                 Log.e("XBUG", "Purge history error. $ex")
             }

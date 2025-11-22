@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.Utils
-import ua.com.programmer.barcodetest.data.BarcodeRepository
+import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
+import ua.com.programmer.barcodetest.data.repository.RepositoryProvider
 
 data class CameraUiState(
     val barcodeValue: String = "",
@@ -24,7 +25,7 @@ data class CameraUiState(
 
 class CameraViewModel(private val context: Context) : ViewModel() {
 
-    private val repository = BarcodeRepository(context)
+    private val repository: BarcodeRepository = RepositoryProvider.provideBarcodeRepository(context)
     private val utils = Utils()
     
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
@@ -89,8 +90,11 @@ class CameraViewModel(private val context: Context) : ViewModel() {
                     state.barcodeValue,
                     state.barcodeFormat,
                     state.barcodeFormatInt
-                )
-                flagSaved = true
+                ).onSuccess {
+                    flagSaved = true
+                }.onFailure { error ->
+                    _uiState.value = _uiState.value.copy(error = error.message)
+                }
             }
         }
     }

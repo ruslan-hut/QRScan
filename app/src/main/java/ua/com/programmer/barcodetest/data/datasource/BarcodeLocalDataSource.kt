@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.data
+package ua.com.programmer.barcodetest.data.datasource
 
 import android.content.ContentValues
 import android.content.Context
@@ -7,15 +7,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ua.com.programmer.barcodetest.DBHelper
 import ua.com.programmer.barcodetest.Utils
+import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
 import java.util.Date
 import java.util.Locale
 
-class BarcodeRepository(private val context: Context) {
+/**
+ * Local data source implementation using SQLite database.
+ * This handles all direct database operations.
+ */
+class BarcodeLocalDataSource(private val context: Context) : BarcodeDataSource {
 
     private val dbHelper = DBHelper(context)
     private val utils = Utils()
 
-    suspend fun saveBarcode(barcodeValue: String, barcodeFormat: String, codeType: Int): Boolean {
+    override suspend fun saveBarcode(
+        barcodeValue: String,
+        barcodeFormat: String,
+        codeType: Int
+    ): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 if (barcodeValue.isNotEmpty() && barcodeFormat.isNotEmpty()) {
@@ -46,12 +55,12 @@ class BarcodeRepository(private val context: Context) {
         }
     }
 
-    suspend fun getAllHistoryItems(): List<BarcodeHistoryItem> {
+    override suspend fun getAllHistoryItems(): List<BarcodeHistoryItem> {
         return withContext(Dispatchers.IO) {
             val items = mutableListOf<BarcodeHistoryItem>()
             val db = dbHelper.readableDatabase
             val cursor = db.query("history", null, null, null, null, null, "time DESC")
-            
+
             try {
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
@@ -65,30 +74,30 @@ class BarcodeRepository(private val context: Context) {
                     } else {
                         null
                     }
-                    
+
                     items.add(BarcodeHistoryItem(id, date, time, codeType, codeValue, note))
                 }
             } finally {
                 cursor.close()
             }
-            
+
             items
         }
     }
 
-    suspend fun deleteHistoryItem(itemId: Long): Boolean {
+    override suspend fun deleteHistoryItem(itemId: Long): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val db = dbHelper.writableDatabase
-                db.delete("history", "_id=?", arrayOf(itemId.toString()))
-                true
+                val deletedRows = db.delete("history", "_id=?", arrayOf(itemId.toString()))
+                deletedRows > 0
             } catch (e: Exception) {
                 false
             }
         }
     }
 
-    suspend fun cleanOldHistory(): Int {
+    override suspend fun cleanOldHistory(): Int {
         return withContext(Dispatchers.IO) {
             try {
                 val db = dbHelper.writableDatabase

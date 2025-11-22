@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
-import ua.com.programmer.barcodetest.data.BarcodeRepository
+import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
+import ua.com.programmer.barcodetest.data.repository.RepositoryProvider
 
 data class HistoryUiState(
     val historyItems: List<BarcodeHistoryItem> = emptyList(),
@@ -19,7 +20,7 @@ data class HistoryUiState(
 
 class HistoryViewModel(private val context: Context) : ViewModel() {
 
-    private val repository = BarcodeRepository(context)
+    private val repository: BarcodeRepository = RepositoryProvider.provideBarcodeRepository(context)
 
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState: StateFlow<HistoryUiState> = _uiState.asStateFlow()
@@ -31,32 +32,32 @@ class HistoryViewModel(private val context: Context) : ViewModel() {
     fun loadHistory() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-            try {
-                val items = repository.getAllHistoryItems()
-                _uiState.value = _uiState.value.copy(
-                    historyItems = items,
-                    isEmpty = items.isEmpty(),
-                    isLoading = false
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message
-                )
-            }
+            repository.getAllHistoryItems()
+                .onSuccess { items ->
+                    _uiState.value = _uiState.value.copy(
+                        historyItems = items,
+                        isEmpty = items.isEmpty(),
+                        isLoading = false
+                    )
+                }
+                .onFailure { error ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
+                }
         }
     }
 
     fun deleteItem(itemId: Long) {
         viewModelScope.launch {
-            try {
-                val success = repository.deleteHistoryItem(itemId)
-                if (success) {
+            repository.deleteHistoryItem(itemId)
+                .onSuccess {
                     loadHistory() // Reload after deletion
                 }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(error = e.message)
-            }
+                .onFailure { error ->
+                    _uiState.value = _uiState.value.copy(error = error.message)
+                }
         }
     }
 
