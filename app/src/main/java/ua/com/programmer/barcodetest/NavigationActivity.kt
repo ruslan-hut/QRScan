@@ -23,6 +23,9 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.Date
 
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -190,23 +193,15 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun cleanDatabase() {
-        val utils = Utils()
-        val db = DBHelper(this).writableDatabase
-        if (db.isOpen) {
+        // Use repository for database operations
+        GlobalScope.launch(Dispatchers.IO) {
             try {
-                db.beginTransaction()
-                val query = "DELETE FROM history WHERE time<?"
-                val statement = db.compileStatement(query)
-                statement.bindLong(1, utils.dateBeginShiftDate())
-                statement.executeUpdateDelete()
-                db.setTransactionSuccessful()
+                val repository = ua.com.programmer.barcodetest.data.BarcodeRepository(this@NavigationActivity)
+                repository.cleanOldHistory()
             } catch (ex: Exception) {
                 Log.e("XBUG", "Purge history error. $ex")
-            } finally {
-                db.endTransaction()
             }
         }
-        db.close()
     }
 
     private fun firebaseAuthentication() {
