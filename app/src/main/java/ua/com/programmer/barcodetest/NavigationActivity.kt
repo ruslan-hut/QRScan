@@ -14,6 +14,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -27,6 +28,7 @@ import java.util.Date
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var backPressedTime: Long = 0
     private var appSettings: AppSettings? = null
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,21 +64,27 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         firebaseAuthentication()
+        
+        // Setup modern back press handling
+        setupBackPressHandler(drawer)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START)
-        } else {
-            if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                super.onBackPressed()
-            } else {
-                Toast.makeText(this, R.string.hint_press_back, Toast.LENGTH_SHORT).show()
-                backPressedTime = System.currentTimeMillis()
+    private fun setupBackPressHandler(drawer: DrawerLayout) {
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START)
+                } else {
+                    if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                        finish()
+                    } else {
+                        Toast.makeText(this@NavigationActivity, R.string.hint_press_back, Toast.LENGTH_SHORT).show()
+                        backPressedTime = System.currentTimeMillis()
+                    }
+                }
             }
         }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -111,7 +119,13 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     private fun attachFragment(fragmentClass: Class<*>) {
         var fragment: Fragment? = null
         try {
-            fragment = fragmentClass.newInstance() as Fragment
+            // Use proper fragment instantiation instead of deprecated newInstance()
+            fragment = when (fragmentClass) {
+                CameraFragment::class.java -> CameraFragment()
+                HistoryFragment::class.java -> HistoryFragment()
+                SettingsFragment::class.java -> SettingsFragment()
+                else -> fragmentClass.getDeclaredConstructor().newInstance() as Fragment
+            }
         } catch (ex: Exception) {
             Toast.makeText(this, R.string.no_activity_error, Toast.LENGTH_SHORT).show()
         }
@@ -123,7 +137,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun onDestroy() {
         val sharedPreferences =
-            getSharedPreferences("ua.com.programmer.qrscanner.preference", MODE_PRIVATE)
+            getSharedPreferences("ua.com.programmer.barcodetest.preference", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("BARCODE", "")
         editor.putString("FORMAT", "")
@@ -137,7 +151,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             .setMessage(R.string.rate_app_text)
             .setPositiveButton(R.string.rate_app_OK) { _: DialogInterface?, _: Int ->
                 val sharedPreferences = getSharedPreferences(
-                    "ua.com.programmer.qrscanner.preference",
+                    "ua.com.programmer.barcodetest.preference",
                     MODE_PRIVATE
                 )
                 val editor = sharedPreferences.edit()
@@ -165,7 +179,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             .setNegativeButton(R.string.dialog_cancel) { dialogInterface: DialogInterface?, i: Int ->
                 //will ask to rate next time
                 val sharedPreferences = getSharedPreferences(
-                    "ua.com.programmer.qrscanner.preference",
+                    "ua.com.programmer.barcodetest.preference",
                     MODE_PRIVATE
                 )
                 val editor = sharedPreferences.edit()

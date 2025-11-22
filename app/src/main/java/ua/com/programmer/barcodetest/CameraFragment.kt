@@ -111,7 +111,7 @@ class CameraFragment : Fragment() {
         btReset.setOnClickListener { resetScanner() }
 
         sharedPreferences = requireContext().getSharedPreferences(
-            "ua.com.programmer.qrscanner.preference",
+            "ua.com.programmer.barcodetest.preference",
             Context.MODE_PRIVATE
         )
         barcodeValue = sharedPreferences.getString("BARCODE", "") ?: ""
@@ -207,7 +207,7 @@ class CameraFragment : Fragment() {
         buttonsVisibilityTrigger(true)
 
         // Send broadcast intent with barcode data
-        val intent = Intent("ua.com.programmer.qrscanner.BARCODE_SCANNED")
+        val intent = Intent("ua.com.programmer.barcodetest.BARCODE_SCANNED")
         intent.putExtra("BARCODE_VALUE", barcodeValue)
         intent.putExtra("BARCODE_FORMAT", barcodeFormat)
         requireContext().sendBroadcast(intent)
@@ -254,6 +254,14 @@ class CameraFragment : Fragment() {
             setupCamera()
         } catch (ex: Exception) {
             Toast.makeText(requireContext(), R.string.hint_try_to_reset, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Properly shutdown camera executor to prevent memory leaks
+        if (::cameraExecutor.isInitialized) {
+            cameraExecutor.shutdown()
         }
     }
 }

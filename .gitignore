@@ -1,6 +1,8 @@
 /.idea/
 /.gradle/
 /.kotlin/
+/.vscode/
 /local.properties
 /app/build/
 /app/google-services.json
+.DS_Store

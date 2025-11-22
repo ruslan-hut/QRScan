@@ -74,6 +74,14 @@ class HistoryFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Properly close database cursor to prevent memory leaks
+        if (::mItemAdapter.isInitialized) {
+            mItemAdapter.closeCursor()
+        }
+    }
+
     private inner class HistoryItemAdapter : RecyclerView.Adapter<ItemViewHolder>() {
         var cursor: Cursor? = null
 
@@ -82,6 +90,8 @@ class HistoryFragment : Fragment() {
         }
 
         fun resetCursor() {
+            // Close old cursor before creating a new one to prevent memory leaks
+            cursor?.close()
             val dbHelper = DBHelper(requireContext())
             val db = dbHelper.writableDatabase
             cursor = db.query("history", null, null, null, null, null, "time DESC")
@@ -94,9 +104,12 @@ class HistoryFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            cursor!!.moveToPosition(position)
+            val currentCursor = cursor ?: return
+            if (!currentCursor.moveToPosition(position)) {
+                return
+            }
 
-            val helper = CursorHelper(cursor!!)
+            val helper = CursorHelper(currentCursor)
 
             //long itemID = cursor.getLong(cursor.getColumnIndex("_id"));
             val codeType = helper.getInt("codeType")
@@ -121,12 +134,15 @@ class HistoryFragment : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return cursor!!.count
+            return cursor?.count ?: 0
         }
 
         override fun getItemId(position: Int): Long {
-            cursor!!.moveToPosition(position)
-            val helper = CursorHelper(cursor!!)
+            val currentCursor = cursor ?: return 0L
+            if (!currentCursor.moveToPosition(position)) {
+                return 0L
+            }
+            val helper = CursorHelper(currentCursor)
             return helper.getLong("raw_id")
         }
 
@@ -137,6 +153,11 @@ class HistoryFragment : Fragment() {
             db.delete("history", "_id=$itemID", null)
             resetCursor()
             mItemAdapter.notifyItemRemoved(position)
+        }
+        
+        fun closeCursor() {
+            cursor?.close()
+            cursor = null
         }
     }
 
