@@ -1,6 +1,6 @@
-package ua.com.programmer.barcodetest.data.repository
+package ua.com.programmer.qrscanner.data.repository
 
-import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
+import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
 
 /**
  * Repository interface that defines the contract for barcode data operations.

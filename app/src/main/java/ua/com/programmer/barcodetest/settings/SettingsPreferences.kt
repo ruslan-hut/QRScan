@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.settings
+package ua.com.programmer.qrscanner.settings
 
 import android.content.SharedPreferences
 import javax.inject.Inject

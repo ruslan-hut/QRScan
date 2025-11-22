@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.content.ContentValues
 import android.database.Cursor

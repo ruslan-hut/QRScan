@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.Manifest
 import android.app.SearchManager
@@ -33,9 +33,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.error.ErrorDisplay
-import ua.com.programmer.barcodetest.settings.SettingsPreferences
-import ua.com.programmer.barcodetest.viewmodel.CameraViewModel
+import ua.com.programmer.qrscanner.error.ErrorDisplay
+import ua.com.programmer.qrscanner.settings.SettingsPreferences
+import ua.com.programmer.qrscanner.viewmodel.CameraViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.annotation.Nonnull
@@ -58,9 +58,7 @@ class CameraFragment : Fragment() {
     private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
         ProcessCameraProvider.getInstance(requireContext())
     }
-    private val cameraExecutor: ExecutorService by lazy {
-        Executors.newSingleThreadExecutor()
-    }
+    private lateinit var cameraExecutor: ExecutorService
 
     private fun buttonsVisibilityTrigger(visible: Boolean) {
         viewModel.setShowButtons(visible)
@@ -122,6 +120,11 @@ class CameraFragment : Fragment() {
         textView = view.findViewById(R.id.txtContent)
         cameraView = view.findViewById(R.id.camera_view)
 
+        // Initialize camera executor
+        if (!::cameraExecutor.isInitialized) {
+            cameraExecutor = Executors.newSingleThreadExecutor()
+        }
+
         // Observe ViewModel state
         observeViewModelState()
 
@@ -158,6 +161,10 @@ class CameraFragment : Fragment() {
     }
 
     private fun setupCamera() {
+                    // Ensure camera executor is initialized
+                    if (!::cameraExecutor.isInitialized) {
+                        cameraExecutor = Executors.newSingleThreadExecutor()
+                    }
                     cameraProvider.addListener({
                         val provider = cameraProvider.get()
                         val preview = Preview.Builder().build()

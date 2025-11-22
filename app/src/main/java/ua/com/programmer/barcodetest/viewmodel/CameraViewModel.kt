@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.viewmodel
+package ua.com.programmer.qrscanner.viewmodel
 
 import android.content.Context
 import android.content.Intent
@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.Utils
-import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
-import ua.com.programmer.barcodetest.di.AppPreferences
-import ua.com.programmer.barcodetest.error.AppError
-import ua.com.programmer.barcodetest.error.ErrorMapper
-import ua.com.programmer.barcodetest.error.getErrorMessage
-import ua.com.programmer.barcodetest.settings.SettingsPreferences
+import ua.com.programmer.qrscanner.Utils
+import ua.com.programmer.qrscanner.data.repository.BarcodeRepository
+import ua.com.programmer.qrscanner.di.AppPreferences
+import ua.com.programmer.qrscanner.error.AppError
+import ua.com.programmer.qrscanner.error.ErrorMapper
+import ua.com.programmer.qrscanner.error.getErrorMessage
+import ua.com.programmer.qrscanner.settings.SettingsPreferences
 import javax.inject.Inject
 
 data class CameraUiState(
@@ -110,7 +110,7 @@ class CameraViewModel @Inject constructor(
     }
 
     private fun sendBroadcast(barcodeValue: String, barcodeFormat: String) {
-        val intent = Intent("ua.com.programmer.barcodetest.BARCODE_SCANNED")
+        val intent = Intent("ua.com.programmer.qrscanner.BARCODE_SCANNED")
         intent.putExtra("BARCODE_VALUE", barcodeValue)
         intent.putExtra("BARCODE_FORMAT", barcodeFormat)
         context.sendBroadcast(intent)

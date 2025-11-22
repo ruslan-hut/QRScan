@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.viewmodel.SettingsViewModel
+import ua.com.programmer.qrscanner.viewmodel.SettingsViewModel
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {

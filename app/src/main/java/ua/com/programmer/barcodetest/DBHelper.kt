@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

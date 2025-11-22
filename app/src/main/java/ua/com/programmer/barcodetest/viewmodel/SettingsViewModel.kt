@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.viewmodel
+package ua.com.programmer.qrscanner.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.settings.SettingsModel
-import ua.com.programmer.barcodetest.settings.SettingsPreferences
+import ua.com.programmer.qrscanner.settings.SettingsModel
+import ua.com.programmer.qrscanner.settings.SettingsPreferences
 import javax.inject.Inject
 
 data class SettingsUiState(

@@ -28,7 +28,7 @@ android {
     def _versionName = "3." + _patch
 
     defaultConfig {
-        applicationId "ua.com.programmer.barcodetest"
+        applicationId "ua.com.programmer.qrscanner"
         minSdkVersion 23
         targetSdkVersion 35
         versionCode _patch
@@ -55,7 +55,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace 'ua.com.programmer.barcodetest'
+    namespace 'ua.com.programmer.qrscanner'
 }
 
 // Secrets Gradle Plugin configuration

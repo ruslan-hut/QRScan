@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.di
+package ua.com.programmer.qrscanner.di
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,7 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ua.com.programmer.barcodetest.settings.SettingsPreferences
+import ua.com.programmer.qrscanner.settings.SettingsPreferences
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -26,7 +26,7 @@ object AppModule {
         @ApplicationContext context: Context
     ): SharedPreferences {
         return context.getSharedPreferences(
-            "ua.com.programmer.barcodetest.preference",
+            "ua.com.programmer.qrscanner.preference",
             Context.MODE_PRIVATE
         )
     }

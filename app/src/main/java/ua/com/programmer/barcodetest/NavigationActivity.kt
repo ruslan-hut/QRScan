@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -27,9 +27,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
-import ua.com.programmer.barcodetest.error.ErrorMapper
-import ua.com.programmer.barcodetest.settings.SettingsPreferences
+import ua.com.programmer.qrscanner.data.repository.BarcodeRepository
+import ua.com.programmer.qrscanner.error.ErrorMapper
+import ua.com.programmer.qrscanner.settings.SettingsPreferences
 import java.util.Date
 import javax.inject.Inject
 
@@ -153,7 +153,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun onDestroy() {
         val sharedPreferences =
-            getSharedPreferences("ua.com.programmer.barcodetest.preference", MODE_PRIVATE)
+            getSharedPreferences("ua.com.programmer.qrscanner.preference", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("BARCODE", "")
         editor.putString("FORMAT", "")
@@ -167,7 +167,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             .setMessage(R.string.rate_app_text)
             .setPositiveButton(R.string.rate_app_OK) { _: DialogInterface?, _: Int ->
                 val sharedPreferences = getSharedPreferences(
-                    "ua.com.programmer.barcodetest.preference",
+                    "ua.com.programmer.qrscanner.preference",
                     MODE_PRIVATE
                 )
                 val editor = sharedPreferences.edit()
@@ -195,7 +195,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             .setNegativeButton(R.string.dialog_cancel) { dialogInterface: DialogInterface?, i: Int ->
                 //will ask to rate next time
                 val sharedPreferences = getSharedPreferences(
-                    "ua.com.programmer.barcodetest.preference",
+                    "ua.com.programmer.qrscanner.preference",
                     MODE_PRIVATE
                 )
                 val editor = sharedPreferences.edit()

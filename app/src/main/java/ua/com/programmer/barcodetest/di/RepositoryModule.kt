@@ -1,12 +1,12 @@
-package ua.com.programmer.barcodetest.di
+package ua.com.programmer.qrscanner.di
 
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ua.com.programmer.barcodetest.data.datasource.BarcodeDataSource
-import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
-import ua.com.programmer.barcodetest.data.repository.BarcodeRepositoryImpl
+import ua.com.programmer.qrscanner.data.datasource.BarcodeDataSource
+import ua.com.programmer.qrscanner.data.repository.BarcodeRepository
+import ua.com.programmer.qrscanner.data.repository.BarcodeRepositoryImpl
 import javax.inject.Singleton
 
 @Module

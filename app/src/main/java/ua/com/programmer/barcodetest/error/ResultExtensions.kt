@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.error
+package ua.com.programmer.qrscanner.error
 
 /**
  * Extension functions for Result type to work with AppError
@@ -8,10 +8,13 @@ package ua.com.programmer.barcodetest.error
  * Maps a Result's exception to AppError
  */
 fun <T> Result<T>.mapError(): Result<T> {
-    return onFailure { exception ->
-        val appError = ErrorMapper.map(exception)
-        return@onFailure Result.failure<T>(appError)
-    }
+    return fold(
+        onSuccess = { Result.success(it) },
+        onFailure = { exception ->
+            val appError = ErrorMapper.map(exception)
+            Result.failure<T>(appError)
+        }
+    )
 }
 
 /**

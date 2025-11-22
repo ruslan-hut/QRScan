@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.data
+package ua.com.programmer.qrscanner.data
 
 data class BarcodeHistoryItem(
     val id: Long,

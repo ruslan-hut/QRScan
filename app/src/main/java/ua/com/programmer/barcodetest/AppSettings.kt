@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -12,7 +12,7 @@ class AppSettings(private val context: Context) {
     private val sharedPreferences: SharedPreferences
 
     init {
-        val tag = "ua.com.programmer.barcodetest.preference"
+        val tag = "ua.com.programmer.qrscanner.preference"
         sharedPreferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE)
     }
 
@@ -49,7 +49,7 @@ class AppSettings(private val context: Context) {
             val applicationInfo = context.packageManager
                 .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
             val bundle = applicationInfo.metaData
-            return bundle.getString("ua.com.programmer.barcodetest.default_user_pass")
+            return bundle.getString("ua.com.programmer.qrscanner.default_user_pass")
         } catch (e: Exception) {
             Log.e("XBUG", "meta-data: $e")
         }

@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.data.database
+package ua.com.programmer.qrscanner.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -19,7 +19,7 @@ interface BarcodeHistoryDao {
     @Query("SELECT * FROM history ORDER BY time DESC")
     suspend fun getAllHistoryItemsList(): List<BarcodeHistoryEntity>
 
-    @Query("SELECT * FROM history WHERE id = :id")
+    @Query("SELECT * FROM history WHERE _id = :id")
     suspend fun getHistoryItemById(id: Long): BarcodeHistoryEntity?
 
     @Insert
@@ -34,7 +34,7 @@ interface BarcodeHistoryDao {
     @Delete
     suspend fun deleteHistoryItem(item: BarcodeHistoryEntity)
 
-    @Query("DELETE FROM history WHERE id = :id")
+    @Query("DELETE FROM history WHERE _id = :id")
     suspend fun deleteHistoryItemById(id: Long): Int
 
     @Query("DELETE FROM history WHERE time < :cutoffTime")

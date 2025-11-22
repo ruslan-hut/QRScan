@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.di
+package ua.com.programmer.qrscanner.di
 
 import android.content.Context
 import dagger.Module
@@ -6,10 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ua.com.programmer.barcodetest.data.database.BarcodeDatabase
-import ua.com.programmer.barcodetest.data.database.BarcodeHistoryDao
-import ua.com.programmer.barcodetest.data.datasource.BarcodeDataSource
-import ua.com.programmer.barcodetest.data.datasource.BarcodeLocalDataSource
+import ua.com.programmer.qrscanner.data.database.BarcodeDatabase
+import ua.com.programmer.qrscanner.data.database.BarcodeHistoryDao
+import ua.com.programmer.qrscanner.data.datasource.BarcodeDataSource
+import ua.com.programmer.qrscanner.data.datasource.BarcodeLocalDataSource
 import javax.inject.Singleton
 
 @Module

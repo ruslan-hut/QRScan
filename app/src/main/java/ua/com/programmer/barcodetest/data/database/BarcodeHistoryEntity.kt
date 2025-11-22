@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.data.database
+package ua.com.programmer.qrscanner.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

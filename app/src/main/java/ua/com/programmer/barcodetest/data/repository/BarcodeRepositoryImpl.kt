@@ -1,9 +1,9 @@
-package ua.com.programmer.barcodetest.data.repository
+package ua.com.programmer.qrscanner.data.repository
 
-import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
-import ua.com.programmer.barcodetest.data.datasource.BarcodeDataSource
-import ua.com.programmer.barcodetest.error.AppError
-import ua.com.programmer.barcodetest.error.ErrorMapper
+import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
+import ua.com.programmer.qrscanner.data.datasource.BarcodeDataSource
+import ua.com.programmer.qrscanner.error.AppError
+import ua.com.programmer.qrscanner.error.ErrorMapper
 
 /**
  * Implementation of BarcodeRepository.

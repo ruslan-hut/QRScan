@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="ua.com.programmer.barcodetest.NavigationActivity"
+    tools:context="ua.com.programmer.qrscanner.NavigationActivity"
     tools:showIn="@layout/app_bar_navigation"
     android:id="@+id/container">
 

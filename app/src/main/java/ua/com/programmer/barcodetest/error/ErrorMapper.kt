@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.error
+package ua.com.programmer.qrscanner.error
 
 import android.util.Log
 import java.io.IOException

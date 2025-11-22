@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest.viewmodel
+package ua.com.programmer.qrscanner.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
-import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
-import ua.com.programmer.barcodetest.error.AppError
-import ua.com.programmer.barcodetest.error.ErrorMapper
+import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
+import ua.com.programmer.qrscanner.data.repository.BarcodeRepository
+import ua.com.programmer.qrscanner.error.AppError
+import ua.com.programmer.qrscanner.error.ErrorMapper
 import javax.inject.Inject
 
 data class HistoryUiState(

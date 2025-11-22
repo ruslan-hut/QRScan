@@ -1,6 +1,6 @@
-package ua.com.programmer.barcodetest.data.datasource
+package ua.com.programmer.qrscanner.data.datasource
 
-import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
+import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
 
 /**
  * Interface for barcode data source operations.

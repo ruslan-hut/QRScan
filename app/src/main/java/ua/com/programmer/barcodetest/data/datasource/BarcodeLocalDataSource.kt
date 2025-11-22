@@ -1,9 +1,9 @@
-package ua.com.programmer.barcodetest.data.datasource
+package ua.com.programmer.qrscanner.data.datasource
 
-import ua.com.programmer.barcodetest.Utils
-import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
-import ua.com.programmer.barcodetest.data.database.BarcodeHistoryDao
-import ua.com.programmer.barcodetest.data.database.BarcodeHistoryEntity
+import ua.com.programmer.qrscanner.Utils
+import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
+import ua.com.programmer.qrscanner.data.database.BarcodeHistoryDao
+import ua.com.programmer.qrscanner.data.database.BarcodeHistoryEntity
 import java.util.Date
 import java.util.Locale
 

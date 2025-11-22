@@ -1,4 +1,4 @@
-package ua.com.programmer.barcodetest
+package ua.com.programmer.qrscanner
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.barcode.common.Barcode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import ua.com.programmer.barcodetest.data.BarcodeHistoryItem
-import ua.com.programmer.barcodetest.error.ErrorDisplay
-import ua.com.programmer.barcodetest.viewmodel.HistoryViewModel
+import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
+import ua.com.programmer.qrscanner.error.ErrorDisplay
+import ua.com.programmer.qrscanner.viewmodel.HistoryViewModel
 
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
