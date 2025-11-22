@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ua.com.programmer.barcodetest.settings.SettingsPreferences
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -28,6 +29,14 @@ object AppModule {
             "ua.com.programmer.barcodetest.preference",
             Context.MODE_PRIVATE
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsPreferences(
+        @AppPreferences sharedPreferences: SharedPreferences
+    ): SettingsPreferences {
+        return SettingsPreferences(sharedPreferences)
     }
 }
 

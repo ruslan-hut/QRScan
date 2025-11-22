@@ -17,6 +17,7 @@ import ua.com.programmer.barcodetest.di.AppPreferences
 import ua.com.programmer.barcodetest.error.AppError
 import ua.com.programmer.barcodetest.error.ErrorMapper
 import ua.com.programmer.barcodetest.error.getErrorMessage
+import ua.com.programmer.barcodetest.settings.SettingsPreferences
 import javax.inject.Inject
 
 data class CameraUiState(
@@ -33,7 +34,8 @@ data class CameraUiState(
 class CameraViewModel @Inject constructor(
     private val repository: BarcodeRepository,
     @ApplicationContext private val context: Context,
-    @AppPreferences private val sharedPreferences: SharedPreferences
+    @AppPreferences private val sharedPreferences: SharedPreferences,
+    private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
 
     private val utils = Utils()
@@ -89,7 +91,9 @@ class CameraViewModel @Inject constructor(
         editor.putString("FORMAT", state.barcodeFormat)
         editor.apply()
 
-        if (!flagSaved && state.barcodeValue.isNotEmpty() && state.barcodeFormat.isNotEmpty()) {
+        // Only save if auto-save is enabled
+        if (!flagSaved && state.barcodeValue.isNotEmpty() && state.barcodeFormat.isNotEmpty() 
+            && settingsPreferences.autoSave) {
             viewModelScope.launch {
                 repository.saveBarcode(
                     state.barcodeValue,

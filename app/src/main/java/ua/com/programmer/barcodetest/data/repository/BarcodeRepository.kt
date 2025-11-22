@@ -35,8 +35,9 @@ interface BarcodeRepository {
 
     /**
      * Cleans old history items based on retention policy
+     * @param retentionDays Number of days to retain history (default: 30)
      * @return Result containing number of deleted items or error
      */
-    suspend fun cleanOldHistory(): Result<Int>
+    suspend fun cleanOldHistory(retentionDays: Int = 30): Result<Int>
 }
 

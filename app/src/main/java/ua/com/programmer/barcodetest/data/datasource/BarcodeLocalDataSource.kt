@@ -79,9 +79,9 @@ class BarcodeLocalDataSource(
         }
     }
 
-    override suspend fun cleanOldHistory(): Int {
+    override suspend fun cleanOldHistory(retentionDays: Int): Int {
         return try {
-            val cutoffTime = utils.dateBeginShiftDate()
+            val cutoffTime = utils.dateBeginShiftDate(retentionDays)
             dao.deleteOldHistory(cutoffTime)
         } catch (e: Exception) {
             0

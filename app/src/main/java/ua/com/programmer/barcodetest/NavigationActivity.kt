@@ -29,6 +29,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.data.repository.BarcodeRepository
 import ua.com.programmer.barcodetest.error.ErrorMapper
+import ua.com.programmer.barcodetest.settings.SettingsPreferences
 import java.util.Date
 import javax.inject.Inject
 
@@ -37,6 +38,10 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     
     @Inject
     lateinit var repository: BarcodeRepository
+    
+    @Inject
+    lateinit var settingsPreferences: SettingsPreferences
+    
     private var backPressedTime: Long = 0
     private var appSettings: AppSettings? = null
     private lateinit var onBackPressedCallback: OnBackPressedCallback
@@ -116,10 +121,10 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
-        if (id == R.id.nav_camera) {
-            attachFragment(CameraFragment::class.java)
-        } else if (id == R.id.nav_history) {
-            attachFragment(HistoryFragment::class.java)
+        when (id) {
+            R.id.nav_camera -> attachFragment(CameraFragment::class.java)
+            R.id.nav_history -> attachFragment(HistoryFragment::class.java)
+            R.id.nav_settings -> attachFragment(SettingsFragment::class.java)
         }
 
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -201,9 +206,10 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun cleanDatabase() {
-        // Use injected repository for database operations
+        // Use injected repository for database operations with retention days from settings
         GlobalScope.launch(Dispatchers.IO) {
-            repository.cleanOldHistory()
+            val retentionDays = settingsPreferences.historyRetentionDays
+            repository.cleanOldHistory(retentionDays)
                 .onFailure { throwable ->
                     val appError = ErrorMapper.map(throwable)
                     Log.e("XBUG", "Purge history error: ${ErrorMapper.getDebugMessage(appError)}")

@@ -8,8 +8,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,15 +34,20 @@ import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ua.com.programmer.barcodetest.error.ErrorDisplay
+import ua.com.programmer.barcodetest.settings.SettingsPreferences
 import ua.com.programmer.barcodetest.viewmodel.CameraViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.annotation.Nonnull
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
 
     private val viewModel: CameraViewModel by viewModels()
+    
+    @Inject
+    lateinit var settingsPreferences: SettingsPreferences
 
     private lateinit var cameraView: PreviewView
     private lateinit var textView: TextView
@@ -211,14 +220,44 @@ class CameraFragment : Fragment() {
     private fun showBarcodeValue(format: String, value: String) {
         stopCamera()
 
-        val tg = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
-        tg.startTone(ToneGenerator.TONE_PROP_BEEP)
+        // Play sound if enabled
+        if (settingsPreferences.soundEnabled) {
+            val tg = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP)
+        }
+
+        // Vibrate if enabled
+        if (settingsPreferences.vibrationEnabled) {
+            vibrate()
+        }
 
         val barcodeText = """
             $format
             $value
             """.trimIndent()
         textView.text = barcodeText
+    }
+
+    private fun vibrate() {
+        try {
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = requireContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(200)
+            }
+        } catch (e: Exception) {
+            // Vibration not available or permission denied
+            utils.debug("Vibration error: ${e.message}")
+        }
     }
 
     private fun resetScanner() {

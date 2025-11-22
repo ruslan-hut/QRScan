@@ -35,8 +35,9 @@ interface BarcodeDataSource {
 
     /**
      * Cleans old history items based on retention policy
+     * @param retentionDays Number of days to retain history
      * @return Number of items deleted
      */
-    suspend fun cleanOldHistory(): Int
+    suspend fun cleanOldHistory(retentionDays: Int = 30): Int
 }
 

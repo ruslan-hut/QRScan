@@ -53,9 +53,9 @@ class BarcodeRepositoryImpl(
         }
     }
 
-    override suspend fun cleanOldHistory(): Result<Int> {
+    override suspend fun cleanOldHistory(retentionDays: Int): Result<Int> {
         return try {
-            val deletedCount = localDataSource.cleanOldHistory()
+            val deletedCount = localDataSource.cleanOldHistory(retentionDays)
             Result.success(deletedCount)
         } catch (e: Exception) {
             Result.failure(ErrorMapper.mapDatabaseError(e, "cleanup"))

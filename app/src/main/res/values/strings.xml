@@ -26,5 +26,23 @@
     <string name="hint_try_to_reset">Try to restart application</string>
     <string name="stop_camera">Stop camera</string>
     <string name="error_camera">Can\'t start a camera provider, please try to restart</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_auto_save">Auto-save scanned barcodes</string>
+    <string name="settings_auto_save_summary">Automatically save scanned barcodes to history</string>
+    <string name="settings_history_retention">History retention (days)</string>
+    <string name="settings_history_retention_summary">Number of days to keep history items</string>
+    <string name="settings_sound">Sound feedback</string>
+    <string name="settings_sound_summary">Play sound when barcode is scanned</string>
+    <string name="settings_vibration">Vibration feedback</string>
+    <string name="settings_vibration_summary">Vibrate when barcode is scanned</string>
+    <string name="settings_camera_flash">Camera flash</string>
+    <string name="settings_camera_flash_summary">Enable camera flash for scanning</string>
+    <string name="settings_reset">Reset to defaults</string>
+    <string name="settings_reset_dialog_title">Reset Settings</string>
+    <string name="settings_reset_dialog_message">Are you sure you want to reset all settings to default values?</string>
+    <string name="settings_reset_confirm">Reset</string>
+    <string name="settings_saved">Settings saved</string>
 
 </resources>

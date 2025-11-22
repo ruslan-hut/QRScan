@@ -6,13 +6,13 @@ import java.util.*
 
 class Utils {
 
-    fun dateBeginShiftDate(): Long {
+    fun dateBeginShiftDate(retentionDays: Int = 30): Long {
         val calendar: Calendar = GregorianCalendar()
         val currentYear = calendar[Calendar.YEAR]
         val currentMonth = calendar[Calendar.MONTH]
         val currentDay = calendar[Calendar.DATE]
         calendar[currentYear, currentMonth, currentDay, 0] = 0
-        return calendar.timeInMillis / 1000 - 86400 * 30
+        return calendar.timeInMillis / 1000 - 86400L * retentionDays
     }
 
     fun nameOfBarcodeFormat(format: Int): String {
