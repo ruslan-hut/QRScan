@@ -53,6 +53,7 @@ class CameraFragment : Fragment() {
     private lateinit var textView: TextView
     private lateinit var buttons: LinearLayout
     private lateinit var floatingActionButton: FloatingActionButton
+    private lateinit var viewfinderOverlay: ViewfinderOverlay
     private val utils = Utils()
 
     private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
@@ -66,9 +67,11 @@ class CameraFragment : Fragment() {
             stopCamera()
             floatingActionButton.visibility = View.GONE
             buttons.visibility = View.VISIBLE
+            viewfinderOverlay.visibility = View.GONE
         } else {
             floatingActionButton.visibility = View.VISIBLE
             buttons.visibility = View.GONE
+            viewfinderOverlay.visibility = View.VISIBLE
         }
     }
 
@@ -84,6 +87,9 @@ class CameraFragment : Fragment() {
         }
 
         buttons = view.findViewById(R.id.buttons)
+        textView = view.findViewById(R.id.txtContent)
+        cameraView = view.findViewById(R.id.camera_view)
+        viewfinderOverlay = view.findViewById(R.id.viewfinder_overlay)
         buttonsVisibilityTrigger(false)
 
         val btShare: TextView = view.findViewById(R.id.button_share)
@@ -116,9 +122,6 @@ class CameraFragment : Fragment() {
             viewModel.resetScanner()
             resetScanner()
         }
-
-        textView = view.findViewById(R.id.txtContent)
-        cameraView = view.findViewById(R.id.camera_view)
 
         // Initialize camera executor
         if (!::cameraExecutor.isInitialized) {
