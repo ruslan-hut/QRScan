@@ -43,6 +43,7 @@ class HistoryFragment : Fragment() {
         mRecyclerView.setLayoutManager(linearLayoutManager)
 
         mItemAdapter = HistoryItemAdapter()
+        mRecyclerView.adapter = mItemAdapter
 
         val simpleCallback: ItemTouchHelper.SimpleCallback =
             object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
