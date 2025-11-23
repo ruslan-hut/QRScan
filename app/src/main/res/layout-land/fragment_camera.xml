@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +21,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/grey"
+        android:background="@drawable/barcode_text_background"
         android:layout_alignParentBottom="false"
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="false"
@@ -51,47 +52,68 @@
         android:alpha="0.8"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_share"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            android:background="@drawable/background_rounded_corner_light"
-            android:drawableTop="@drawable/ic_share_white_24dp"
-            android:drawablePadding="8dp"
-            android:gravity="center_horizontal"
+            android:minHeight="56dp"
+            android:minWidth="120dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:padding="16dp"
             android:text="@string/share"
-            android:textColor="@color/colorWhite"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
+            app:backgroundTint="?attr/colorSecondary"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_share_white_24dp"
+            app:iconGravity="textTop"
+            app:iconPadding="8dp"
+            app:iconTint="?attr/colorOnSecondary"
+            style="@style/Widget.Material3.Button" />
 
-        <TextView
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_search"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            android:background="@drawable/background_rounded_corner_light"
-            android:drawableTop="@drawable/ic_search_white_24dp"
-            android:drawablePadding="8dp"
-            android:gravity="center_horizontal"
+            android:minHeight="56dp"
+            android:minWidth="120dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:padding="16dp"
             android:text="@string/search"
-            android:textColor="@color/colorWhite"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
+            app:backgroundTint="?attr/colorSecondary"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_search_white_24dp"
+            app:iconGravity="textTop"
+            app:iconPadding="8dp"
+            app:iconTint="?attr/colorOnSecondary"
+            style="@style/Widget.Material3.Button" />
 
-        <TextView
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_reset"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            android:background="@drawable/background_rounded_corner_light"
-            android:drawableTop="@drawable/ic_refresh_white_24dp"
-            android:drawablePadding="8dp"
-            android:gravity="center_horizontal"
+            android:minHeight="56dp"
+            android:minWidth="120dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:padding="16dp"
             android:text="@string/reset"
-            android:textColor="@color/colorWhite"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
+            app:backgroundTint="?attr/colorSecondary"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_refresh_white_24dp"
+            app:iconGravity="textTop"
+            app:iconPadding="8dp"
+            app:iconTint="?attr/colorOnSecondary"
+            style="@style/Widget.Material3.Button" />
 
     </LinearLayout>
 

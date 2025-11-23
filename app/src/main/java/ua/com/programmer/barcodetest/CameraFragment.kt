@@ -37,6 +37,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
@@ -114,7 +115,7 @@ class CameraFragment : Fragment() {
         viewfinderOverlay = view.findViewById(R.id.viewfinder_overlay)
         buttonsVisibilityTrigger(false)
 
-        val btShare: TextView = view.findViewById(R.id.button_share)
+        val btShare: MaterialButton = view.findViewById(R.id.button_share)
         btShare.setOnClickListener {
             val state = viewModel.uiState.value
             if (state.barcodeValue.isNotEmpty()) {
@@ -125,7 +126,7 @@ class CameraFragment : Fragment() {
             }
         }
 
-        val btSearch: TextView = view.findViewById(R.id.button_search)
+        val btSearch: MaterialButton = view.findViewById(R.id.button_search)
         btSearch.setOnClickListener {
             val state = viewModel.uiState.value
             if (state.barcodeValue.isNotEmpty()) {
@@ -139,7 +140,7 @@ class CameraFragment : Fragment() {
             }
         }
 
-        val btReset: TextView = view.findViewById(R.id.button_reset)
+        val btReset: MaterialButton = view.findViewById(R.id.button_reset)
         btReset.setOnClickListener { 
             viewModel.resetScanner()
             resetScanner()

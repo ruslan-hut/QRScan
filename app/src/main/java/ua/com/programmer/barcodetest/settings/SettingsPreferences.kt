@@ -20,6 +20,7 @@ class SettingsPreferences @Inject constructor(
         private const val KEY_CAMERA_FLASH = "camera_flash_enabled"
         private const val KEY_BRIGHTNESS = "image_brightness"
         private const val KEY_CONTRAST = "image_contrast"
+        private const val KEY_DARK_MODE = "dark_mode"
         
         // Default values
         private const val DEFAULT_AUTO_SAVE = true
@@ -29,6 +30,7 @@ class SettingsPreferences @Inject constructor(
         private const val DEFAULT_CAMERA_FLASH = false
         private const val DEFAULT_BRIGHTNESS = 80 // Range: 0-150
         private const val DEFAULT_CONTRAST = 140 // Range: 50-200 (represents 0.5-2.0, default 1.4)
+        private const val DEFAULT_DARK_MODE = -1 // -1 = system, 0 = light, 1 = dark
     }
 
     var autoSave: Boolean
@@ -59,6 +61,16 @@ class SettingsPreferences @Inject constructor(
         get() = sharedPreferences.getInt(KEY_CONTRAST, DEFAULT_CONTRAST)
         set(value) = sharedPreferences.edit().putInt(KEY_CONTRAST, value.coerceIn(50, 200)).apply()
 
+    /**
+     * Dark mode preference:
+     * -1 = Follow system (default)
+     * 0 = Light mode
+     * 1 = Dark mode
+     */
+    var darkMode: Int
+        get() = sharedPreferences.getInt(KEY_DARK_MODE, DEFAULT_DARK_MODE)
+        set(value) = sharedPreferences.edit().putInt(KEY_DARK_MODE, value.coerceIn(-1, 1)).apply()
+
     fun resetToDefaults() {
         sharedPreferences.edit()
             .putBoolean(KEY_AUTO_SAVE, DEFAULT_AUTO_SAVE)
@@ -68,6 +80,7 @@ class SettingsPreferences @Inject constructor(
             .putBoolean(KEY_CAMERA_FLASH, DEFAULT_CAMERA_FLASH)
             .putInt(KEY_BRIGHTNESS, DEFAULT_BRIGHTNESS)
             .putInt(KEY_CONTRAST, DEFAULT_CONTRAST)
+            .putInt(KEY_DARK_MODE, DEFAULT_DARK_MODE)
             .apply()
     }
 }

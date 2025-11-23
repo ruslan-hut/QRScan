@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -13,6 +12,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ua.com.programmer.qrscanner.viewmodel.SettingsViewModel
@@ -32,7 +32,7 @@ class SettingsFragment : Fragment() {
     private lateinit var brightnessValue: TextView
     private lateinit var contrastSeekBar: SeekBar
     private lateinit var contrastValue: TextView
-    private lateinit var resetButton: Button
+    private lateinit var resetButton: MaterialButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
