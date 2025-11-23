@@ -18,6 +18,16 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
+    <ImageView
+        android:id="@+id/scanned_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:background="@color/darkGrey"
+        android:contentDescription="@string/barcode_preview"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,6 +74,7 @@
             android:padding="16dp"
             android:text="@string/share"
             android:textSize="16sp"
+            android:textAlignment="center"
             android:textColor="?attr/colorOnSecondary"
             app:backgroundTint="?attr/colorSecondary"
             app:cornerRadius="12dp"
@@ -85,6 +96,7 @@
             android:padding="16dp"
             android:text="@string/search"
             android:textSize="16sp"
+            android:textAlignment="center"
             android:textColor="?attr/colorOnSecondary"
             app:backgroundTint="?attr/colorSecondary"
             app:cornerRadius="12dp"
@@ -106,6 +118,7 @@
             android:padding="16dp"
             android:text="@string/reset"
             android:textSize="16sp"
+            android:textAlignment="center"
             android:textColor="?attr/colorOnSecondary"
             app:backgroundTint="?attr/colorSecondary"
             app:cornerRadius="12dp"

@@ -28,8 +28,8 @@ class SettingsPreferences @Inject constructor(
         private const val DEFAULT_SOUND_ENABLED = true
         private const val DEFAULT_VIBRATION_ENABLED = false
         private const val DEFAULT_CAMERA_FLASH = false
-        private const val DEFAULT_BRIGHTNESS = 80 // Range: 0-150
-        private const val DEFAULT_CONTRAST = 140 // Range: 50-200 (represents 0.5-2.0, default 1.4)
+        private const val DEFAULT_BRIGHTNESS = 40 // Range: 0-150
+        private const val DEFAULT_CONTRAST = 80 // Range: 50-200 (represents 0.5-2.0, default 1.4)
         private const val DEFAULT_DARK_MODE = -1 // -1 = system, 0 = light, 1 = dark
     }
 

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">QR сканер</string>
-    <string name="reset">Повторить сканирование</string>
+    <string name="reset">Повторить</string>
     <string name="hint_press_back">Нажмите еще раз для выхода</string>
     <string name="all_formats">Все форматы</string>
     <string name="mode">Режим сканирования</string>
     <string name="qr_code">QR код</string>
     <string name="ean13">EAN13</string>
     <string name="scanning">Сканирование</string>
-    <string name="search">Искать в Интернете</string>
+    <string name="search">Искать</string>
     <string name="share">Отправить</string>
     <string name="error_no_permission">Нет разрешения на использование камеры</string>
     <string name="error_detector">Ошибка инициализации детектора, попробуйте перезагрузить приложение</string>

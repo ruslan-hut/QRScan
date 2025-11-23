@@ -41,7 +41,8 @@ class SettingsViewModel @Inject constructor(
                 vibrationEnabled = settingsPreferences.vibrationEnabled,
                 cameraFlashEnabled = settingsPreferences.cameraFlashEnabled,
                 imageBrightness = settingsPreferences.imageBrightness,
-                imageContrast = settingsPreferences.imageContrast
+                imageContrast = settingsPreferences.imageContrast,
+                darkMode = settingsPreferences.darkMode
             )
             _uiState.value = _uiState.value.copy(
                 settings = settings,
@@ -114,6 +115,17 @@ class SettingsViewModel @Inject constructor(
                 settingsPreferences.imageContrast = contrast
                 _uiState.value = _uiState.value.copy(
                     settings = _uiState.value.settings.copy(imageContrast = contrast)
+                )
+            }
+        }
+    }
+
+    fun updateDarkMode(mode: Int) {
+        viewModelScope.launch {
+            if (mode in -1..1) {
+                settingsPreferences.darkMode = mode
+                _uiState.value = _uiState.value.copy(
+                    settings = _uiState.value.settings.copy(darkMode = mode)
                 )
             }
         }

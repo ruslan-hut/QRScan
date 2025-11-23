@@ -1,13 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ua.com.programmer.qrscanner.HistoryFragment">
 
-     <androidx.recyclerview.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/history_recycler"/>
+        android:id="@+id/history_recycler" />
 
     <LinearLayout
         android:id="@+id/title_no_data"
@@ -15,15 +16,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:src="@drawable/ic_sentiment_neutral_black_24dp"/>
+            android:src="@drawable/ic_sentiment_neutral_black_24dp"
+            app:tint="?attr/colorOnSurfaceVariant" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/no_data"
-            />
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="16sp"
+            android:gravity="center"/>
     </LinearLayout>
 
 </RelativeLayout>

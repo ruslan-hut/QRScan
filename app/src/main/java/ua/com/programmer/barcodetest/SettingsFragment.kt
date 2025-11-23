@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -28,6 +30,10 @@ class SettingsFragment : Fragment() {
     private lateinit var soundSwitch: SwitchCompat
     private lateinit var vibrationSwitch: SwitchCompat
     private lateinit var cameraFlashSwitch: SwitchCompat
+    private lateinit var darkModeRadioGroup: RadioGroup
+    private lateinit var darkModeSystemRadio: RadioButton
+    private lateinit var darkModeLightRadio: RadioButton
+    private lateinit var darkModeDarkRadio: RadioButton
     private lateinit var brightnessSeekBar: SeekBar
     private lateinit var brightnessValue: TextView
     private lateinit var contrastSeekBar: SeekBar
@@ -54,6 +60,10 @@ class SettingsFragment : Fragment() {
         soundSwitch = view.findViewById(R.id.settings_sound_switch)
         vibrationSwitch = view.findViewById(R.id.settings_vibration_switch)
         cameraFlashSwitch = view.findViewById(R.id.settings_camera_flash_switch)
+        darkModeRadioGroup = view.findViewById(R.id.settings_dark_mode_radiogroup)
+        darkModeSystemRadio = view.findViewById(R.id.settings_dark_mode_system)
+        darkModeLightRadio = view.findViewById(R.id.settings_dark_mode_light)
+        darkModeDarkRadio = view.findViewById(R.id.settings_dark_mode_dark)
         brightnessSeekBar = view.findViewById(R.id.settings_image_brightness_seekbar)
         brightnessValue = view.findViewById(R.id.settings_image_brightness_value)
         contrastSeekBar = view.findViewById(R.id.settings_image_contrast_seekbar)
@@ -71,6 +81,7 @@ class SettingsFragment : Fragment() {
                 soundSwitch.isChecked = state.settings.soundEnabled
                 vibrationSwitch.isChecked = state.settings.vibrationEnabled
                 cameraFlashSwitch.isChecked = state.settings.cameraFlashEnabled
+                updateDarkModeSelection(state.settings.darkMode)
                 brightnessSeekBar.progress = state.settings.imageBrightness
                 updateBrightnessText(state.settings.imageBrightness)
                 contrastSeekBar.progress = state.settings.imageContrast
@@ -121,6 +132,16 @@ class SettingsFragment : Fragment() {
             viewModel.updateCameraFlashEnabled(isChecked)
         }
 
+        darkModeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val mode = when (checkedId) {
+                R.id.settings_dark_mode_system -> -1
+                R.id.settings_dark_mode_light -> 0
+                R.id.settings_dark_mode_dark -> 1
+                else -> -1
+            }
+            viewModel.updateDarkMode(mode)
+        }
+
         brightnessSeekBar.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -166,6 +187,25 @@ class SettingsFragment : Fragment() {
         // Convert from 50-200 range to 0.5-2.0 display
         val contrastFloat = contrast / 100f
         contrastValue.text = String.format("%.1f", contrastFloat)
+    }
+
+    private fun updateDarkModeSelection(mode: Int) {
+        // Prevent triggering listener when programmatically setting selection
+        darkModeRadioGroup.setOnCheckedChangeListener(null)
+        when (mode) {
+            -1 -> darkModeSystemRadio.isChecked = true
+            0 -> darkModeLightRadio.isChecked = true
+            1 -> darkModeDarkRadio.isChecked = true
+        }
+        darkModeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val newMode = when (checkedId) {
+                R.id.settings_dark_mode_system -> -1
+                R.id.settings_dark_mode_light -> 0
+                R.id.settings_dark_mode_dark -> 1
+                else -> -1
+            }
+            viewModel.updateDarkMode(newMode)
+        }
     }
 
     private fun showResetDialog() {
