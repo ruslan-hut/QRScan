@@ -6,6 +6,7 @@ data class BarcodeHistoryItem(
     val time: Long,
     val codeType: Int,
     val codeValue: String,
-    val note: String? = null
+    val note: String? = null,
+    val imagePath: String? = null
 )
 

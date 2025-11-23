@@ -39,10 +39,15 @@
     <string name="settings_vibration_summary">Vibrate when barcode is scanned</string>
     <string name="settings_camera_flash">Camera flash</string>
     <string name="settings_camera_flash_summary">Enable camera flash for scanning</string>
+    <string name="settings_image_brightness">Image brightness</string>
+    <string name="settings_image_brightness_summary">Adjust brightness of saved barcode images (0-150)</string>
+    <string name="settings_image_contrast">Image contrast</string>
+    <string name="settings_image_contrast_summary">Adjust contrast of saved barcode images (0.5-2.0)</string>
     <string name="settings_reset">Reset to defaults</string>
     <string name="settings_reset_dialog_title">Reset Settings</string>
     <string name="settings_reset_dialog_message">Are you sure you want to reset all settings to default values?</string>
     <string name="settings_reset_confirm">Reset</string>
     <string name="settings_saved">Settings saved</string>
+    <string name="barcode_preview">Barcode preview</string>
 
 </resources>

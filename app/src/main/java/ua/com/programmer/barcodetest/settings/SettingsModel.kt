@@ -8,6 +8,8 @@ data class SettingsModel(
     val historyRetentionDays: Int = 30,
     val soundEnabled: Boolean = true,
     val vibrationEnabled: Boolean = false,
-    val cameraFlashEnabled: Boolean = false
+    val cameraFlashEnabled: Boolean = false,
+    val imageBrightness: Int = 80,
+    val imageContrast: Int = 140
 )
 

@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  */
 @Database(
     entities = [BarcodeHistoryEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class BarcodeDatabase : RoomDatabase() {
@@ -55,6 +55,32 @@ abstract class BarcodeDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Migration from version 2 to 3 (adding imagePath column)
+         */
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Check if column already exists before adding
+                val cursor = database.query("PRAGMA table_info(history)")
+                var hasImagePathColumn = false
+                try {
+                    while (cursor.moveToNext()) {
+                        val columnName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                        if (columnName == "imagePath") {
+                            hasImagePathColumn = true
+                            break
+                        }
+                    }
+                } finally {
+                    cursor.close()
+                }
+
+                if (!hasImagePathColumn) {
+                    database.execSQL("ALTER TABLE history ADD COLUMN imagePath TEXT")
+                }
+            }
+        }
+
         fun getDatabase(context: Context): BarcodeDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -62,7 +88,7 @@ abstract class BarcodeDatabase : RoomDatabase() {
                     BarcodeDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     // Allow Room to work with existing SQLite database
                     // Room will validate the schema and apply migrations if needed
                     .fallbackToDestructiveMigration()

@@ -39,7 +39,9 @@ class SettingsViewModel @Inject constructor(
                 historyRetentionDays = settingsPreferences.historyRetentionDays,
                 soundEnabled = settingsPreferences.soundEnabled,
                 vibrationEnabled = settingsPreferences.vibrationEnabled,
-                cameraFlashEnabled = settingsPreferences.cameraFlashEnabled
+                cameraFlashEnabled = settingsPreferences.cameraFlashEnabled,
+                imageBrightness = settingsPreferences.imageBrightness,
+                imageContrast = settingsPreferences.imageContrast
             )
             _uiState.value = _uiState.value.copy(
                 settings = settings,
@@ -92,6 +94,28 @@ class SettingsViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 settings = _uiState.value.settings.copy(cameraFlashEnabled = enabled)
             )
+        }
+    }
+
+    fun updateImageBrightness(brightness: Int) {
+        viewModelScope.launch {
+            if (brightness in 0..150) {
+                settingsPreferences.imageBrightness = brightness
+                _uiState.value = _uiState.value.copy(
+                    settings = _uiState.value.settings.copy(imageBrightness = brightness)
+                )
+            }
+        }
+    }
+
+    fun updateImageContrast(contrast: Int) {
+        viewModelScope.launch {
+            if (contrast in 50..200) {
+                settingsPreferences.imageContrast = contrast
+                _uiState.value = _uiState.value.copy(
+                    settings = _uiState.value.settings.copy(imageContrast = contrast)
+                )
+            }
         }
     }
 

@@ -20,7 +20,8 @@ class BarcodeLocalDataSource(
     override suspend fun saveBarcode(
         barcodeValue: String,
         barcodeFormat: String,
-        codeType: Int
+        codeType: Int,
+        imagePath: String?
     ): Boolean {
         return try {
             if (barcodeValue.isNotEmpty() && barcodeFormat.isNotEmpty()) {
@@ -40,7 +41,8 @@ class BarcodeLocalDataSource(
                     time = eventTime,
                     codeType = codeType,
                     codeValue = barcodeValue,
-                    note = null
+                    note = null,
+                    imagePath = imagePath
                 )
                 dao.insertHistoryItem(entity)
                 true
@@ -62,7 +64,8 @@ class BarcodeLocalDataSource(
                     time = entity.time,
                     codeType = entity.codeType,
                     codeValue = entity.codeValue,
-                    note = entity.note
+                    note = entity.note,
+                    imagePath = entity.imagePath
                 )
             }
         } catch (e: Exception) {

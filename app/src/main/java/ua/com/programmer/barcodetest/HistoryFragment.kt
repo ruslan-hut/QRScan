@@ -1,6 +1,7 @@
 package ua.com.programmer.qrscanner
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,12 +15,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.google.mlkit.vision.barcode.common.Barcode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ua.com.programmer.qrscanner.data.BarcodeHistoryItem
 import ua.com.programmer.qrscanner.error.ErrorDisplay
 import ua.com.programmer.qrscanner.viewmodel.HistoryViewModel
+import java.io.File
 
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
@@ -123,6 +126,24 @@ class HistoryFragment : Fragment() {
                 else -> holder.icon.setImageResource(R.drawable.product_48)
             }
 
+            // Load barcode preview image if available
+            if (!item.imagePath.isNullOrEmpty() && ImageStorageHelper.imageExists(item.imagePath)) {
+                holder.preview.visibility = View.VISIBLE
+                holder.preview.load(File(item.imagePath)) {
+                    crossfade(true)
+                    placeholder(R.drawable.product_48)
+                    error(R.drawable.product_48)
+                }
+                // Set click listener to show full-size preview
+                holder.preview.setOnClickListener {
+                    val dialog = ImagePreviewDialogFragment.newInstance(item.imagePath)
+                    dialog.show(parentFragmentManager, "ImagePreviewDialog")
+                }
+            } else {
+                holder.preview.visibility = View.GONE
+                holder.preview.setOnClickListener(null)
+            }
+
             holder.itemView.setOnClickListener {
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.putExtra(Intent.EXTRA_TEXT, item.codeValue)
@@ -149,7 +170,7 @@ class HistoryFragment : Fragment() {
         var date: TextView = view.findViewById(R.id.item_date)
         var type: TextView = view.findViewById(R.id.item_type)
         var value: TextView = view.findViewById(R.id.item_value)
-        var icon: ImageView =
-            view.findViewById(R.id.item_icon)
+        var icon: ImageView = view.findViewById(R.id.item_icon)
+        var preview: ImageView = view.findViewById(R.id.item_preview)
     }
 }

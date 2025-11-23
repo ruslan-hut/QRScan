@@ -28,6 +28,10 @@ class SettingsFragment : Fragment() {
     private lateinit var soundSwitch: SwitchCompat
     private lateinit var vibrationSwitch: SwitchCompat
     private lateinit var cameraFlashSwitch: SwitchCompat
+    private lateinit var brightnessSeekBar: SeekBar
+    private lateinit var brightnessValue: TextView
+    private lateinit var contrastSeekBar: SeekBar
+    private lateinit var contrastValue: TextView
     private lateinit var resetButton: Button
 
     override fun onCreateView(
@@ -50,6 +54,10 @@ class SettingsFragment : Fragment() {
         soundSwitch = view.findViewById(R.id.settings_sound_switch)
         vibrationSwitch = view.findViewById(R.id.settings_vibration_switch)
         cameraFlashSwitch = view.findViewById(R.id.settings_camera_flash_switch)
+        brightnessSeekBar = view.findViewById(R.id.settings_image_brightness_seekbar)
+        brightnessValue = view.findViewById(R.id.settings_image_brightness_value)
+        contrastSeekBar = view.findViewById(R.id.settings_image_contrast_seekbar)
+        contrastValue = view.findViewById(R.id.settings_image_contrast_value)
         resetButton = view.findViewById(R.id.settings_reset_button)
     }
 
@@ -63,6 +71,10 @@ class SettingsFragment : Fragment() {
                 soundSwitch.isChecked = state.settings.soundEnabled
                 vibrationSwitch.isChecked = state.settings.vibrationEnabled
                 cameraFlashSwitch.isChecked = state.settings.cameraFlashEnabled
+                brightnessSeekBar.progress = state.settings.imageBrightness
+                updateBrightnessText(state.settings.imageBrightness)
+                contrastSeekBar.progress = state.settings.imageContrast
+                updateContrastText(state.settings.imageContrast)
 
                 // Show reset dialog
                 if (state.showResetDialog) {
@@ -109,6 +121,34 @@ class SettingsFragment : Fragment() {
             viewModel.updateCameraFlashEnabled(isChecked)
         }
 
+        brightnessSeekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    val brightness = progress.coerceIn(0, 150)
+                    updateBrightnessText(brightness)
+                    viewModel.updateImageBrightness(brightness)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        contrastSeekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    val contrast = progress.coerceIn(50, 200)
+                    updateContrastText(contrast)
+                    viewModel.updateImageContrast(contrast)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
         resetButton.setOnClickListener {
             viewModel.showResetDialog()
         }
@@ -116,6 +156,16 @@ class SettingsFragment : Fragment() {
 
     private fun updateHistoryRetentionText(days: Int) {
         historyRetentionValue.text = "$days ${if (days == 1) "day" else "days"}"
+    }
+
+    private fun updateBrightnessText(brightness: Int) {
+        brightnessValue.text = brightness.toString()
+    }
+
+    private fun updateContrastText(contrast: Int) {
+        // Convert from 50-200 range to 0.5-2.0 display
+        val contrastFloat = contrast / 100f
+        contrastValue.text = String.format("%.1f", contrastFloat)
     }
 
     private fun showResetDialog() {

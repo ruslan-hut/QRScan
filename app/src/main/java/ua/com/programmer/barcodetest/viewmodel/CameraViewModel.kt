@@ -27,7 +27,8 @@ data class CameraUiState(
     val isBarcodeScanned: Boolean = false,
     val showButtons: Boolean = false,
     val isLoading: Boolean = false,
-    val error: AppError? = null
+    val error: AppError? = null,
+    val imagePath: String? = null
 )
 
 @HiltViewModel
@@ -60,7 +61,7 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    fun onBarcodeFound(barcode: String?, format: Int) {
+    fun onBarcodeFound(barcode: String?, format: Int, imagePath: String? = null) {
         if (barcode.isNullOrEmpty()) return
         
         val formatName = utils.nameOfBarcodeFormat(format)
@@ -70,10 +71,11 @@ class CameraViewModel @Inject constructor(
             barcodeFormat = formatName,
             barcodeFormatInt = format,
             isBarcodeScanned = true,
-            showButtons = true
+            showButtons = true,
+            imagePath = imagePath
         )
         
-        saveState()
+        saveState(imagePath)
         sendBroadcast(barcode, formatName)
     }
 
@@ -84,7 +86,7 @@ class CameraViewModel @Inject constructor(
         saveState()
     }
 
-    private fun saveState() {
+    private fun saveState(imagePath: String? = null) {
         val state = _uiState.value
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putString("BARCODE", state.barcodeValue)
@@ -98,7 +100,8 @@ class CameraViewModel @Inject constructor(
                 repository.saveBarcode(
                     state.barcodeValue,
                     state.barcodeFormat,
-                    state.barcodeFormatInt
+                    state.barcodeFormatInt,
+                    imagePath ?: state.imagePath
                 ).onSuccess {
                     flagSaved = true
                 }.onFailure { throwable ->

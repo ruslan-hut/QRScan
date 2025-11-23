@@ -18,15 +18,21 @@ import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.graphics.Bitmap
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import com.google.mlkit.vision.barcode.common.Barcode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -57,11 +63,13 @@ class CameraFragment : Fragment() {
     lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var cameraView: PreviewView
+    private lateinit var scannedImageView: ImageView
     private lateinit var textView: TextView
     private lateinit var buttons: LinearLayout
     private lateinit var floatingActionButton: FloatingActionButton
     private lateinit var viewfinderOverlay: ViewfinderOverlay
     private val utils = Utils()
+    private var currentProcessedBitmap: Bitmap? = null
 
     private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
         ProcessCameraProvider.getInstance(requireContext())
@@ -102,6 +110,7 @@ class CameraFragment : Fragment() {
         buttons = view.findViewById(R.id.buttons)
         textView = view.findViewById(R.id.txtContent)
         cameraView = view.findViewById(R.id.camera_view)
+        scannedImageView = view.findViewById(R.id.scanned_image_view)
         viewfinderOverlay = view.findViewById(R.id.viewfinder_overlay)
         buttonsVisibilityTrigger(false)
 
@@ -161,6 +170,7 @@ class CameraFragment : Fragment() {
             viewModel.uiState.collect { state ->
                 // Update UI based on state
                 if (state.isBarcodeScanned) {
+                    // Show barcode text (image is already displayed by showProcessedImage)
                     showBarcodeValue(state.barcodeFormat, state.barcodeValue)
                 }
                 
@@ -198,8 +208,63 @@ class CameraFragment : Fragment() {
                         imageAnalysis.setAnalyzer(
                             cameraExecutor,
                             BarcodeImageAnalyzer(object : BarcodeFoundListener {
-                                override fun onBarcodeFound(barCode: String?, format: Int) {
-                                    viewModel.onBarcodeFound(barCode, format)
+                                override fun onBarcodeFound(barcode: Barcode, imageProxy: ImageProxy) {
+                                    // Process image on background thread
+                                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                                        try {
+                                            // Get brightness and contrast settings
+                                            val brightness = settingsPreferences.imageBrightness
+                                            val contrast = settingsPreferences.imageContrast
+                                            
+                                            // Process image with bounding box
+                                            val processedBitmap = BarcodeImageProcessor.processImageWithBarcode(
+                                                imageProxy,
+                                                barcode,
+                                                brightness,
+                                                contrast
+                                            )
+                                            
+                                            // Close ImageProxy first
+                                            imageProxy.close()
+                                            
+                                            // Update UI on main thread immediately with processed image
+                                            withContext(Dispatchers.Main) {
+                                                // Display processed image immediately
+                                                processedBitmap?.let {
+                                                    showProcessedImage(it)
+                                                    // Store bitmap temporarily (will be recycled on reset)
+                                                    currentProcessedBitmap = it
+                                                }
+                                                
+                                                // Save image to storage in background
+                                                launch(Dispatchers.IO) {
+                                                    val imagePath = processedBitmap?.let {
+                                                        ImageStorageHelper.saveImage(it, requireContext())
+                                                    }
+                                                    
+                                                    // Update ViewModel with image path
+                                                    withContext(Dispatchers.Main) {
+                                                        viewModel.onBarcodeFound(
+                                                            barcode.rawValue,
+                                                            barcode.format,
+                                                            imagePath
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            utils.debug("Error processing image: ${e.message}")
+                                            imageProxy.close()
+                                            withContext(Dispatchers.Main) {
+                                                // Still notify about barcode even if image processing fails
+                                                viewModel.onBarcodeFound(
+                                                    barcode.rawValue,
+                                                    barcode.format,
+                                                    null
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
 
                                 override fun onCodeNotFound(error: String?) {
@@ -250,8 +315,14 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun showBarcodeValue(format: String, value: String) {
+    private fun showProcessedImage(bitmap: Bitmap) {
         stopCamera()
+        
+        // Hide camera view and show processed image
+        cameraView.visibility = View.GONE
+        viewfinderOverlay.visibility = View.GONE
+        scannedImageView.visibility = View.VISIBLE
+        scannedImageView.setImageBitmap(bitmap)
 
         // Play sound if enabled
         if (settingsPreferences.soundEnabled) {
@@ -263,7 +334,9 @@ class CameraFragment : Fragment() {
         if (settingsPreferences.vibrationEnabled) {
             vibrate()
         }
+    }
 
+    private fun showBarcodeValue(format: String, value: String) {
         val barcodeText = """
             $format
             $value
@@ -308,6 +381,17 @@ class CameraFragment : Fragment() {
 
     private fun resetScanner() {
         utils.debug("resetting scanner")
+        
+        // Clear processed image
+        currentProcessedBitmap?.recycle()
+        currentProcessedBitmap = null
+        scannedImageView.setImageBitmap(null)
+        scannedImageView.visibility = View.GONE
+        
+        // Show camera view again
+        cameraView.visibility = View.VISIBLE
+        viewfinderOverlay.visibility = View.VISIBLE
+        
         try {
             setupCamera()
         } catch (ex: Exception) {
@@ -321,6 +405,9 @@ class CameraFragment : Fragment() {
         if (::sharedPreferences.isInitialized) {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(settingsChangeListener)
         }
+        // Recycle processed bitmap if still held
+        currentProcessedBitmap?.recycle()
+        currentProcessedBitmap = null
         // Properly shutdown camera executor to prevent memory leaks
         if (::cameraExecutor.isInitialized) {
             cameraExecutor.shutdown()

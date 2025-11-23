@@ -20,6 +20,8 @@ data class BarcodeHistoryEntity(
     val codeType: Int,
     @ColumnInfo(name = "codeValue")
     val codeValue: String,
-    val note: String? = null
+    val note: String? = null,
+    @ColumnInfo(name = "imagePath")
+    val imagePath: String? = null
 )
 

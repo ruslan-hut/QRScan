@@ -12,12 +12,14 @@ interface BarcodeRepository {
      * @param barcodeValue The barcode value
      * @param barcodeFormat The barcode format name
      * @param codeType The barcode format type code
+     * @param imagePath The path to the saved image with highlighted barcode, or null if no image
      * @return Result indicating success or failure
      */
     suspend fun saveBarcode(
         barcodeValue: String,
         barcodeFormat: String,
-        codeType: Int
+        codeType: Int,
+        imagePath: String? = null
     ): Result<Unit>
 
     /**

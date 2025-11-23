@@ -17,10 +17,11 @@ class BarcodeRepositoryImpl(
     override suspend fun saveBarcode(
         barcodeValue: String,
         barcodeFormat: String,
-        codeType: Int
+        codeType: Int,
+        imagePath: String?
     ): Result<Unit> {
         return try {
-            val success = localDataSource.saveBarcode(barcodeValue, barcodeFormat, codeType)
+            val success = localDataSource.saveBarcode(barcodeValue, barcodeFormat, codeType, imagePath)
             if (success) {
                 Result.success(Unit)
             } else {

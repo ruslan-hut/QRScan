@@ -18,6 +18,8 @@ class SettingsPreferences @Inject constructor(
         private const val KEY_SOUND_ENABLED = "sound_enabled"
         private const val KEY_VIBRATION_ENABLED = "vibration_enabled"
         private const val KEY_CAMERA_FLASH = "camera_flash_enabled"
+        private const val KEY_BRIGHTNESS = "image_brightness"
+        private const val KEY_CONTRAST = "image_contrast"
         
         // Default values
         private const val DEFAULT_AUTO_SAVE = true
@@ -25,6 +27,8 @@ class SettingsPreferences @Inject constructor(
         private const val DEFAULT_SOUND_ENABLED = true
         private const val DEFAULT_VIBRATION_ENABLED = false
         private const val DEFAULT_CAMERA_FLASH = false
+        private const val DEFAULT_BRIGHTNESS = 80 // Range: 0-150
+        private const val DEFAULT_CONTRAST = 140 // Range: 50-200 (represents 0.5-2.0, default 1.4)
     }
 
     var autoSave: Boolean
@@ -47,6 +51,14 @@ class SettingsPreferences @Inject constructor(
         get() = sharedPreferences.getBoolean(KEY_CAMERA_FLASH, DEFAULT_CAMERA_FLASH)
         set(value) = sharedPreferences.edit().putBoolean(KEY_CAMERA_FLASH, value).apply()
 
+    var imageBrightness: Int
+        get() = sharedPreferences.getInt(KEY_BRIGHTNESS, DEFAULT_BRIGHTNESS)
+        set(value) = sharedPreferences.edit().putInt(KEY_BRIGHTNESS, value.coerceIn(0, 150)).apply()
+
+    var imageContrast: Int
+        get() = sharedPreferences.getInt(KEY_CONTRAST, DEFAULT_CONTRAST)
+        set(value) = sharedPreferences.edit().putInt(KEY_CONTRAST, value.coerceIn(50, 200)).apply()
+
     fun resetToDefaults() {
         sharedPreferences.edit()
             .putBoolean(KEY_AUTO_SAVE, DEFAULT_AUTO_SAVE)
@@ -54,6 +66,8 @@ class SettingsPreferences @Inject constructor(
             .putBoolean(KEY_SOUND_ENABLED, DEFAULT_SOUND_ENABLED)
             .putBoolean(KEY_VIBRATION_ENABLED, DEFAULT_VIBRATION_ENABLED)
             .putBoolean(KEY_CAMERA_FLASH, DEFAULT_CAMERA_FLASH)
+            .putInt(KEY_BRIGHTNESS, DEFAULT_BRIGHTNESS)
+            .putInt(KEY_CONTRAST, DEFAULT_CONTRAST)
             .apply()
     }
 }
