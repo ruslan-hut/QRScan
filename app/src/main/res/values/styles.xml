@@ -28,9 +28,6 @@
         <!-- Window background uses surface color -->
         <item name="android:windowBackground">@color/md_theme_light_background</item>
         
-        <!-- Button styles -->
-        <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
-        
         <!-- CardView styles -->
         <item name="cardViewStyle">@style/Widget.Material3.CardView</item>
     </style>
