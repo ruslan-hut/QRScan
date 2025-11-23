@@ -5,6 +5,7 @@ import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -20,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
@@ -33,6 +35,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import ua.com.programmer.qrscanner.di.AppPreferences
 import ua.com.programmer.qrscanner.error.ErrorDisplay
 import ua.com.programmer.qrscanner.settings.SettingsPreferences
 import ua.com.programmer.qrscanner.viewmodel.CameraViewModel
@@ -48,6 +51,10 @@ class CameraFragment : Fragment() {
     
     @Inject
     lateinit var settingsPreferences: SettingsPreferences
+    
+    @Inject
+    @AppPreferences
+    lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var cameraView: PreviewView
     private lateinit var textView: TextView
@@ -60,6 +67,12 @@ class CameraFragment : Fragment() {
         ProcessCameraProvider.getInstance(requireContext())
     }
     private lateinit var cameraExecutor: ExecutorService
+    private var camera: Camera? = null
+    private val settingsChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == "camera_flash_enabled") {
+            updateCameraFlash()
+        }
+    }
 
     private fun buttonsVisibilityTrigger(visible: Boolean) {
         viewModel.setShowButtons(visible)
@@ -130,6 +143,9 @@ class CameraFragment : Fragment() {
 
         // Observe ViewModel state
         observeViewModelState()
+        
+        // Observe settings changes for camera flash
+        observeSettingsChanges()
 
         if (requireContext().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.CAMERA), 1)
@@ -162,6 +178,11 @@ class CameraFragment : Fragment() {
             }
         }
     }
+    
+    private fun observeSettingsChanges() {
+        // Register listener for settings changes
+        sharedPreferences.registerOnSharedPreferenceChangeListener(settingsChangeListener)
+    }
 
     private fun setupCamera() {
                     // Ensure camera executor is initialized
@@ -192,12 +213,14 @@ class CameraFragment : Fragment() {
 
                         try {
                             provider.unbindAll()
-                            provider.bindToLifecycle(
+                            camera = provider.bindToLifecycle(
                                 viewLifecycleOwner,
                                 cameraSelector,
                                 imageAnalysis,
                                 preview
                             )
+                            // Update flash state after camera is bound
+                            updateCameraFlash()
                         } catch (e: Exception) {
                             utils.debug("bind provider error; " + e.message)
                         }
@@ -270,6 +293,19 @@ class CameraFragment : Fragment() {
         }
     }
 
+    private fun updateCameraFlash() {
+        try {
+            val cameraControl = camera?.cameraControl
+            val flashEnabled = settingsPreferences.cameraFlashEnabled
+            
+            if (cameraControl != null) {
+                cameraControl.enableTorch(flashEnabled)
+            }
+        } catch (e: Exception) {
+            utils.debug("Camera flash error: ${e.message}")
+        }
+    }
+
     private fun resetScanner() {
         utils.debug("resetting scanner")
         try {
@@ -281,6 +317,10 @@ class CameraFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Unregister settings change listener
+        if (::sharedPreferences.isInitialized) {
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(settingsChangeListener)
+        }
         // Properly shutdown camera executor to prevent memory leaks
         if (::cameraExecutor.isInitialized) {
             cameraExecutor.shutdown()
